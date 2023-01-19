@@ -1,0 +1,12 @@
+//
+//  Configuration.xcconfig
+//  MVPExample
+//
+//  Created by Cristian Chertes on 24.11.2022.
+//  Copyright © 2022 saadeloulladi. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+API_KEY=34949ee757df7b7c24a7d2245d093a97
