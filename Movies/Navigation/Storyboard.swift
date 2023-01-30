@@ -10,7 +10,6 @@ import UIKit
 
 enum Storyboard: String {
     case movies = "Main"
-    case movie = "Movie"
 }
 
 extension Storyboard {
@@ -22,8 +21,8 @@ extension Storyboard {
     }
 }
 
-private extension Storyboard {
+extension Storyboard {
     var current: UIStoryboard {
-        return UIStoryboard(name: rawValue, bundle: nil)
+        return UIStoryboard(name: rawValue, bundle: Bundle.main)
     }
 }

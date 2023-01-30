@@ -7,12 +7,10 @@
 //
 
 import UIKit
-import Combine
 
 class MoviesFlowCoordinator: GeneralFlowCoordinator {
     private var viewModel: MoviesViewModelProtocol
     private let window: UIWindow
-    private var cancellables = Set<AnyCancellable>()
     
     required init(window: UIWindow) {
         self.viewModel = MoviesViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()),
@@ -23,13 +21,9 @@ class MoviesFlowCoordinator: GeneralFlowCoordinator {
     }
     
     override func start() {
-        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-        guard let viewController = storyboard.instantiateViewController(withIdentifier: "MoviesViewController") as? MoviesViewController else {
-            return
-        }
+        let viewController = Storyboard.movies.loadViewController(MoviesViewController.self)
         viewController.viewModel = viewModel
         viewController.modalPresentationStyle = .fullScreen
         window.rootViewController?.present(viewController, animated: true)
-//        window.makeKeyAndVisible()
     }
 }

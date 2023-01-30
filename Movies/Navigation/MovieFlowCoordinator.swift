@@ -6,12 +6,10 @@
 //
 
 import UIKit
-import Combine
 
 class MovieFlowCoordinator: GeneralFlowCoordinator {
     private var viewModel: MovieViewModelProtocol
     private var movieID: String
-    private var cancellables = Set<AnyCancellable>()
     private let navigationController: UINavigationController
     
     required init(navigationController: UINavigationController!, movieID: String) {
@@ -22,10 +20,7 @@ class MovieFlowCoordinator: GeneralFlowCoordinator {
     }
     
     override func start() {
-        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-        guard let movieViewController = storyboard.instantiateViewController(withIdentifier: "MovieViewController") as? MovieViewController else {
-            return
-        }
+        let movieViewController = Storyboard.movies.loadViewController(MovieViewController.self)
         movieViewController.viewModel = viewModel
         movieViewController.loadMovieData(movieID: movieID)
         movieViewController.modalPresentationStyle = .fullScreen

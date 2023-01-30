@@ -1,0 +1,13 @@
+//
+//  ApiRestError.swift
+//  Movies
+//
+//  Created by Cristian Chertes on 30.01.2023.
+//
+
+import Foundation
+
+struct ApiRestError: Error {
+  let error: Error
+  let serverError: ServerError?
+}

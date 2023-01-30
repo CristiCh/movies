@@ -78,6 +78,7 @@ extension MoviesViewController {
                     self.activityIndiacator.stopAnimating()
                 }
             }
+            .store(in: &cancellables)
         
         viewModel.dataSource
             .receive(on: DispatchQueue.main)

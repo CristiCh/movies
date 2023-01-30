@@ -42,10 +42,10 @@ class MoviesViewModel: MoviesViewModelProtocol {
         isLoading.send(true)
         lastDownloadedPage += 1
         let movies = await moviesService.fetchPopularMovies(page: lastDownloadedPage)
-        
+
         if let result = try? movies.result.get() {
             var cells = [MoviesCellViewModel]()
-            let cellVMs = result.results.compactMap {
+            _ = result.results.compactMap {
                 let movieVM = MoviesCellViewModel(movie: Movie.transform(movie: $0, configuration: serviceConfig)!)
                 cells.append(movieVM)
             }
