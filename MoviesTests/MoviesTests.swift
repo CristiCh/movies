@@ -18,8 +18,8 @@ final class MoviesTests: XCTestCase {
     }
 
     func testExample() throws {
-        var test = 1
-        XCTAssertEqual(test, 1)
+//        var test = 1
+//        XCTAssertEqual(test, 1)
     }
 
     func testPerformanceExample() throws {

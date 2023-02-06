@@ -25,9 +25,13 @@ class MoviesService {
             configuration.apiKey
         }
     }
-    private let configuration: ServiceConfiguration
+    private let configuration: ServiceConfigurationProtocol
+    private let sessionManager: Session
     
-    init(configuration: ServiceConfiguration) {
+    init(configuration: ServiceConfigurationProtocol, protocolClass: [AnyClass]? = nil) {
+        let config = URLSessionConfiguration.af.default
+        config.protocolClasses = protocolClass ?? [] + (config.protocolClasses ?? [] )
+        sessionManager = Session(configuration: config)
         self.configuration = configuration
     }
 }
@@ -38,7 +42,7 @@ extension MoviesService: MoviesServiceProtocol {
             let url = URL(string: "\(baseURL)popular?page=\(page)&api_key=\(apiKey)") else {
             return DataRequest.getDataResponseError(error: ConfigError(code: 500, message: "Wrong URL"))
         }
-        return await AF.request(url, method: .get).processResponse(type: MoviesPaginator<ApiMovie>.self)
+        return await sessionManager.request(url, method: .get).processResponse(type: MoviesPaginator<ApiMovie>.self)
     }
     
     func fetchMovie(movieId: String) async -> DataResponse<ApiMovie, Error> {
@@ -47,6 +51,6 @@ extension MoviesService: MoviesServiceProtocol {
                  return DataRequest.getDataResponseError(error: ConfigError(code: 500, message: "Wrong URL"))
         }
         
-        return await AF.request(url, method: .get).processResponse(type: ApiMovie.self)
+        return await sessionManager.request(url, method: .get).processResponse(type: ApiMovie.self)
     }
 }
