@@ -29,7 +29,7 @@ class MovieCollectionCell: BaseMovieCollectionCell {
         imageView.layer.masksToBounds = true
         
         if let movieImageString = movieViewModel.posterPath, let movieImageURL = URL(string: movieImageString)  {
-            imageView.kf.setImage(with: Source.network(ImageResource(downloadURL: movieImageURL))) { [weak self] result in
+            imageView.kf.setImage(with: Source.network(ImageResource(downloadURL: movieImageURL))) { result in
             }
         }
         titleLabel.text = movieViewModel.movie.title

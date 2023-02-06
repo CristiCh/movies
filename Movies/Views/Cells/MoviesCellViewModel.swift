@@ -12,7 +12,6 @@ import Combine
 protocol MovieCellViewModelProtocol {
     var movie: Movie { get }
     var isLoading: CurrentValueSubject<Bool, Never> { get }
-    func finishedDownloadingImage()
 }
 
 class MoviesCellViewModel: BaseMovieCellViewModel, MovieCellViewModelProtocol {
@@ -24,7 +23,7 @@ class MoviesCellViewModel: BaseMovieCellViewModel, MovieCellViewModelProtocol {
         movie.posterPath
     }
     
-    let movie: Movie
+    internal let movie: Movie
     
     init(movie: Movie) {
         self.movie = movie
@@ -37,9 +36,5 @@ class MoviesCellViewModel: BaseMovieCellViewModel, MovieCellViewModelProtocol {
     
     required init(id: String) {
         fatalError("init(id:) has not been implemented")
-    }
-    
-    func finishedDownloadingImage() {
-//        isLoading.send(true)
     }
 }
