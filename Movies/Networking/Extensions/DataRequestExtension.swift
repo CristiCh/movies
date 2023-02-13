@@ -9,8 +9,8 @@ import Foundation
 import Alamofire
 
 extension DataRequest {
-    static func getDataResponseError<T: Codable>(error: Error) -> DataResponse<T, Error> {
-        return DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .failure(error))
+    static func getDataResponseError<T: Codable>(error: Error, response: DataResponse<T, AFError>? = nil) -> DataResponse<T, Error> {
+        return DataResponse(request: response?.request, response: response?.response, data: nil, metrics: nil, serializationDuration: 0, result: .failure(error))
     }
 
     func processResponse<T: Codable>(type: T.Type) async -> DataResponse<T, Error> {
@@ -22,12 +22,12 @@ extension DataRequest {
             self.responseDecodable(of: type) { response in
                 if response.error == nil {
                     if let value = response.value {
-                        continuation.resume(returning: DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .success(value)))
+                        continuation.resume(returning: DataResponse(request: response.request, response: response.response, data: nil, metrics: nil, serializationDuration: 0, result: .success(value)))
                     } else {
                         continuation.resume(returning: DataRequest.getDataResponseError(error: ConfigError(code: 502, message: "Malformed JSON")))
                     }
                 } else {
-                    continuation.resume(returning: DataRequest.getDataResponseError(error: response.error!))
+                    continuation.resume(returning: DataRequest.getDataResponseError(error: response.error!, response: response))
                 }
             }
         })

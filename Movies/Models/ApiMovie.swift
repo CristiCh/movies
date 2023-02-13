@@ -13,11 +13,13 @@ struct ApiMovie: Codable {
     var title: String
     var overview: String
     var posterPath: String
+    var language: String?
     
     private enum CodingKeys : String, CodingKey {
         case id
         case title = "original_title"
         case overview
         case posterPath = "poster_path"
+        case language = "original_language"
     }
 }
