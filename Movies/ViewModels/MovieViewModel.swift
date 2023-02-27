@@ -33,6 +33,8 @@ class MovieViewModel: MovieViewModelProtocol {
             let movieData = await moviesService.fetchMovie(movieId: movieID)
             if let result = try? movieData.result.get() {
                 movie.send(Movie.transform(movie: result, configuration: serviceConfig))
+            } else {
+                movie.send(nil)
             }
             isLoading.send(false)
         }
