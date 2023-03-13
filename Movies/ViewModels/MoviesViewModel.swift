@@ -50,7 +50,10 @@ class MoviesViewModel: MoviesViewModelProtocol {
                 cells.append(movieVM)
             }
             dataSource.value.append(contentsOf: cells)
-            self.dataSource.send(dataSource.value)
+            dataSource.send(dataSource.value)
+        } else {
+            dataSource.send(dataSource.value)
+            lastDownloadedPage -= 1
         }
         isLoading.send(false)
     }
