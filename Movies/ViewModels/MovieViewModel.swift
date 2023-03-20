@@ -10,16 +10,16 @@ import Combine
 
 protocol MovieViewModelProtocol {
     func loadMovieData(movieID: String)
-    var isLoading: CurrentValueSubject<Bool, Never> { get }
-    var movie: CurrentValueSubject<Movie?, Never> { get }
+    var isLoading: Bool { get }
+    var movie: Movie? { get }
 }
 
-class MovieViewModel: MovieViewModelProtocol {
+class MovieViewModel: MovieViewModelProtocol, ObservableObject {
     private var movieID: String?
     private let moviesService: MoviesServiceProtocol
     private let serviceConfig: ServiceConfigurationProtocol
-    var isLoading = CurrentValueSubject<Bool, Never>(false)
-    var movie = CurrentValueSubject<Movie?, Never>(nil)
+    @Published var movie: Movie? = nil
+    @Published var isLoading: Bool = false
     
     init(moviesService: MoviesServiceProtocol, serviceConfiguration: ServiceConfigurationProtocol) {
         self.moviesService = moviesService
@@ -28,15 +28,15 @@ class MovieViewModel: MovieViewModelProtocol {
     
     func loadMovieData(movieID: String) {
         self.movieID = movieID
-        isLoading.send(true)
+        isLoading = true
         Task {
             let movieData = await moviesService.fetchMovie(movieId: movieID)
             if let result = try? movieData.result.get() {
-                movie.send(Movie.transform(movie: result, configuration: serviceConfig))
+                movie = Movie.transform(movie: result, configuration: serviceConfig)
             } else {
-                movie.send(nil)
+                movie = nil
             }
-            isLoading.send(false)
+            isLoading = false
         }
     }
 }

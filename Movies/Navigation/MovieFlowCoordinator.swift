@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class MovieFlowCoordinator: GeneralFlowCoordinator {
     private var viewModel: MovieViewModelProtocol
@@ -20,10 +21,9 @@ class MovieFlowCoordinator: GeneralFlowCoordinator {
     }
     
     override func start() {
-        let movieViewController = Storyboard.movies.loadViewController(MovieViewController.self)
-        movieViewController.viewModel = viewModel
-        movieViewController.loadMovieData(movieID: movieID)
-        movieViewController.modalPresentationStyle = .fullScreen
-        navigationController.present(movieViewController, animated: true)
+        let movieView = UIHostingController(rootView: MovieView(viewModel: viewModel as! MovieViewModel, movieID: movieID))
+        movieView.modalPresentationStyle = .fullScreen
+//        viewController.viewModel = viewModel
+        navigationController.present(movieView, animated: true)
     }
 }
