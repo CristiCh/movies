@@ -14,16 +14,16 @@ protocol MoviesViewModelProtocol {
     func refreshPopularMovies() async
     func goToMovie(movieID: String, navigationController: UINavigationController?)
     var isLoading: CurrentValueSubject<Bool, Never> { get }
-    var dataSource: CurrentValueSubject<[MoviesCellViewModel], Never> { get }
+    var dataSource: [MoviesCellViewModel] { get }
     var goToMovie: PassthroughSubject<Void, Never> { get }
     var lastDownloadedPage: Int { get set }
 }
 
-class MoviesViewModel: MoviesViewModelProtocol {
+class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
     private let moviesService: MoviesServiceProtocol
     private let serviceConfig: ServiceConfigurationProtocol
     private let flowCoordinatorFactory: FlowCoordinatorFactory
-    var dataSource = CurrentValueSubject<[MoviesCellViewModel], Never>([])
+    @Published var dataSource: [MoviesCellViewModel] = []
     var isLoading = CurrentValueSubject<Bool, Never>(false)
     var goToMovie = PassthroughSubject<Void, Never>()
     var lastDownloadedPage = 0
@@ -49,17 +49,19 @@ class MoviesViewModel: MoviesViewModelProtocol {
                 let movieVM = MoviesCellViewModel(movie: Movie.transform(movie: $0, configuration: serviceConfig)!)
                 cells.append(movieVM)
             }
-            dataSource.value.append(contentsOf: cells)
-            dataSource.send(dataSource.value)
+            dataSource.append(contentsOf: cells)
+//            dataSource.value.append(contentsOf: cells)
+//            dataSource.send(dataSource.value)
         } else {
-            dataSource.send(dataSource.value)
+//            dataSource.send(dataSource.value)
             lastDownloadedPage -= 1
         }
         isLoading.send(false)
     }
     
     func refreshPopularMovies() async {
-        dataSource.send([])
+//        dataSource.send([])
+        dataSource = []
         lastDownloadedPage = 0
         await getMovies()
     }

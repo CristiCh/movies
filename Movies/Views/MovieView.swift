@@ -48,6 +48,7 @@ struct MovieView: View {
         .padding(.leading, 24)
         }
         .edgesIgnoringSafeArea(.all)
+        .navigationBarBackButtonHidden()
         .onAppear {
             viewModel.loadMovieData(movieID: movieID)
         }

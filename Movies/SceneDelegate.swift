@@ -6,14 +6,15 @@
 //
 
 import UIKit
+import SwiftUI
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var window: UIWindow?
-
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let _ = (scene as? UIWindowScene) else { return }
+        let flowCoordinator = FlowCoordinatorFactory().create(type: .home(window: window, scene: scene)) as! MoviesFlowCoordinator
+        flowCoordinator.start()
+        window = flowCoordinator.window
+        window?.makeKeyAndVisible()
     }
 }

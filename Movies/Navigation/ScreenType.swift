@@ -8,6 +8,6 @@
 import UIKit
 
 enum ScreenType {
-    case home(window: UIWindow)
+    case home(window: UIWindow?, scene: UIScene?)
     case movieDetail(movieID: String, navigationController: UINavigationController)
 }

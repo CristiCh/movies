@@ -23,7 +23,6 @@ class MovieFlowCoordinator: GeneralFlowCoordinator {
     override func start() {
         let movieView = UIHostingController(rootView: MovieView(viewModel: viewModel as! MovieViewModel, movieID: movieID))
         movieView.modalPresentationStyle = .fullScreen
-//        viewController.viewModel = viewModel
         navigationController.present(movieView, animated: true)
     }
 }

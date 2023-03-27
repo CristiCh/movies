@@ -12,8 +12,8 @@ class FlowCoordinatorFactory {
     
     func create(type: ScreenType) -> GeneralFlowCoordinatorProtocol {
         switch type {
-        case let .home(window):
-            return MoviesFlowCoordinator(window: window)
+        case let .home(window, scene):
+            return MoviesFlowCoordinator(window: window, scene: scene)
         case let .movieDetail(movieID, navigationController):
             return MovieFlowCoordinator(navigationController: navigationController, movieID: movieID)
         }
