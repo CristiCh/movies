@@ -19,3 +19,9 @@ struct Movie: Identifiable {
         Movie(id: "\(movie.id)", title: movie.title, overView: movie.overview, posterPath: "\(configuration.imagesURL)\(movie.posterPath)")
     }
 }
+
+extension Movie: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}

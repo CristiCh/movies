@@ -27,7 +27,7 @@ class MovieViewModel: MovieViewModelProtocol, ObservableObject {
     }
     
     func loadMovieData(movieID: String) {
-        self.movieID = movieID
+        self.movieID = "EB26C189-4DB4-4C2A-96B2-945AF904B689"//movieID
         isLoading = true
         Task {
             let movieData = await moviesService.fetchMovie(movieId: movieID)

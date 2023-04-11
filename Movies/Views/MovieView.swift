@@ -25,7 +25,6 @@ struct MovieView: View {
                         .clipped()
                 }
             }
-            
             Color.black
                 .opacity(0.7)
             VStack {
@@ -40,7 +39,7 @@ struct MovieView: View {
             .foregroundColor(.white)
             .padding()
             .padding(.bottom, 32)
-            
+
             BackButtonView {
                 self.presentation.wrappedValue.dismiss()
             }
