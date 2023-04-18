@@ -10,7 +10,7 @@ import Combine
 import Kingfisher
 
 struct MoviesView: View {
-    @ObservedObject var viewModel: MoviesViewModel
+    @StateObject var viewModel: MoviesViewModel
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     @State private var navigateToMovieDetail: Bool = false
     @State private var selectedMovie: Movie? = nil

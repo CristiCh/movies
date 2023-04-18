@@ -50,17 +50,14 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
                 cells.append(movieVM)
             }
             dataSource.append(contentsOf: cells)
-//            dataSource.value.append(contentsOf: cells)
-//            dataSource.send(dataSource.value)
         } else {
-//            dataSource.send(dataSource.value)
+            dataSource.append(contentsOf: [])
             lastDownloadedPage -= 1
         }
         isLoading.send(false)
     }
     
     func refreshPopularMovies() async {
-//        dataSource.send([])
         dataSource = []
         lastDownloadedPage = 0
         await getMovies()

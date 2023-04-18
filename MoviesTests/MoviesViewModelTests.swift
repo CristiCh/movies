@@ -37,7 +37,7 @@ final class MoviesViewModelTests: XCTestCase {
         let paginator = MoviesPaginator(page: 1, totalPages: 1, totalResults: 2, results: [apiObject1, apiObject2])
         mockMovieService.popularMovies = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .success(paginator))
         XCTAssertEqual(moviesViewModel.lastDownloadedPage, 0)
-        moviesViewModel.dataSource.dropFirst().sink { moviesCellViewModel in
+        moviesViewModel.$dataSource.dropFirst().sink { moviesCellViewModel in
             XCTAssertEqual(moviesCellViewModel.count, 2)
             XCTAssertNotNil(moviesCellViewModel)
             XCTAssertEqual(moviesCellViewModel[0].movie.id, "123")
@@ -60,7 +60,7 @@ final class MoviesViewModelTests: XCTestCase {
         let expectation = XCTestExpectation(description: "testGetMovies")
         mockMovieService.popularMovies = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .failure(ConfigError(code: 501, message: "DataRequset is nil")))
         XCTAssertEqual(moviesViewModel.lastDownloadedPage, 0)
-        moviesViewModel.dataSource.dropFirst().sink { moviesCellViewModel in
+        moviesViewModel.$dataSource.dropFirst().sink { moviesCellViewModel in
             XCTAssertEqual(moviesCellViewModel.count, 0)
             XCTAssertEqual(self.mockMovieService.fetchPopularMovieCounter, 1)
             XCTAssertEqual(self.moviesViewModel.lastDownloadedPage, 1)
@@ -81,7 +81,7 @@ final class MoviesViewModelTests: XCTestCase {
         let paginator = MoviesPaginator(page: 1, totalPages: 1, totalResults: 2, results: [apiObject1, apiObject2])
         mockMovieService.popularMovies = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .success(paginator))
         XCTAssertEqual(moviesViewModel.lastDownloadedPage, 0)
-        moviesViewModel.dataSource.collect(5).sink { moviesCellViewModel in
+        moviesViewModel.$dataSource.collect(4).sink { moviesCellViewModel in
             let firstMovieCellViewModel = moviesCellViewModel[1]
             XCTAssertEqual(firstMovieCellViewModel.count, 2)
             XCTAssertNotNil(firstMovieCellViewModel)
@@ -89,7 +89,7 @@ final class MoviesViewModelTests: XCTestCase {
             XCTAssertEqual(firstMovieCellViewModel[0].movie.title, "Title1")
             XCTAssertEqual(firstMovieCellViewModel[0].movie.overView, "Overview1")
             XCTAssertEqual(firstMovieCellViewModel[0].movie.posterPath, "https://image.tmdb.org/t/p/original/PosterPath1")
-            
+
             let secondMovieCellViewModel = moviesCellViewModel[2]
             XCTAssertEqual(secondMovieCellViewModel.count, 2)
             XCTAssertNotNil(secondMovieCellViewModel)
@@ -97,8 +97,8 @@ final class MoviesViewModelTests: XCTestCase {
             XCTAssertEqual(secondMovieCellViewModel[0].movie.title, "Title1")
             XCTAssertEqual(secondMovieCellViewModel[0].movie.overView, "Overview1")
             XCTAssertEqual(secondMovieCellViewModel[0].movie.posterPath, "https://image.tmdb.org/t/p/original/PosterPath1")
-            
-            let thirdMovieCellViewModel = moviesCellViewModel[4]
+
+            let thirdMovieCellViewModel = moviesCellViewModel[3]
             XCTAssertEqual(thirdMovieCellViewModel.count, 4)
             XCTAssertNotNil(thirdMovieCellViewModel)
             XCTAssertEqual(thirdMovieCellViewModel[0].movie.id, "123")
