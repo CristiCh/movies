@@ -16,7 +16,7 @@ struct MoviesView: View {
     @State private var selectedMovie: Movie? = nil
     
     var body: some View {
-        NavigationStack() {
+        NavigationStack {
             VStack {
                 GeometryReader { geo in
                     ScrollView {
@@ -34,7 +34,7 @@ struct MoviesView: View {
                 }
             }
             .navigationDestination(for: Movie.self) { movie in
-                MovieView(viewModel: MovieViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()), serviceConfiguration: ServiceConfiguration()), movieID: movie.id)
+                MovieView(movieID: movie.id)
             }
         }
         .navigationBarBackButtonHidden(true)

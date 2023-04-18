@@ -9,7 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct MovieView: View {
-    @ObservedObject var viewModel: MovieViewModel
+    @StateObject var viewModel: MovieViewModel = MovieViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()), serviceConfiguration: ServiceConfiguration())
     @Environment(\.presentationMode) var presentation: Binding<PresentationMode>
     var movieID: String
     

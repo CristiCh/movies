@@ -27,16 +27,22 @@ class MovieViewModel: MovieViewModelProtocol, ObservableObject {
     }
     
     func loadMovieData(movieID: String) {
-        self.movieID = "EB26C189-4DB4-4C2A-96B2-945AF904B689"//movieID
+        self.movieID = movieID
         isLoading = true
         Task {
             let movieData = await moviesService.fetchMovie(movieId: movieID)
             if let result = try? movieData.result.get() {
-                movie = Movie.transform(movie: result, configuration: serviceConfig)
+                await setMovieData(movie: Movie.transform(movie: result, configuration: serviceConfig))
             } else {
-                movie = nil
+                await setMovieData(movie: nil)
             }
-            isLoading = false
+        }
+    }
+    
+    private func setMovieData(movie: Movie?) async {
+        await MainActor.run {
+            self.movie = movie
+            self.isLoading = false
         }
     }
 }
