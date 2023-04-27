@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct BackButtonView: View {
-    var action:() -> Void
+    @Environment(\.presentationMode) var presentation: Binding<PresentationMode>
     
     var body: some View {
         Button {
-            action()
+            self.presentation.wrappedValue.dismiss()
         } label: {
             Image(systemName: "arrow.backward")
                 .foregroundColor(.white)
@@ -35,6 +35,6 @@ struct IconButtonDefault: ButtonStyle {
 
 struct BackButtonView_Previews: PreviewProvider {
     static var previews: some View {
-        BackButtonView() {}
+        BackButtonView()
     }
 }

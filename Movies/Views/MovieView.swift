@@ -10,7 +10,6 @@ import Kingfisher
 
 struct MovieView: View {
     @StateObject var viewModel: MovieViewModel = MovieViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()), serviceConfiguration: ServiceConfiguration())
-    @Environment(\.presentationMode) var presentation: Binding<PresentationMode>
     var movieID: String
     
     var body: some View {
@@ -40,9 +39,7 @@ struct MovieView: View {
             .padding()
             .padding(.bottom, 32)
 
-            BackButtonView {
-                self.presentation.wrappedValue.dismiss()
-            }
+            BackButtonView()
         .padding(.top, 50)
         .padding(.leading, 24)
         }

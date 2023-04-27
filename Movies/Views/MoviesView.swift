@@ -67,6 +67,7 @@ struct MoviesView_Previews: PreviewProvider {
     static var previews: some View {
         MoviesView(viewModel: MoviesViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()),
                                               serviceConfiguration: ServiceConfiguration(),
+                                              databaseManager: DatabaseManager(),
                                               flowCoordinatorFactory: FlowCoordinatorFactory()))
     }
 }

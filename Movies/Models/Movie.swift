@@ -18,6 +18,10 @@ struct Movie: Identifiable {
     static func transform(movie: ApiMovie, configuration: ServiceConfigurationProtocol) -> Movie? {
         Movie(id: "\(movie.id)", title: movie.title, overView: movie.overview, posterPath: "\(configuration.imagesURL)\(movie.posterPath)")
     }
+    
+    static func transform(movie: MovieDB) -> Movie? {
+        Movie(id: "\(movie.id)", imdbId: nil, title: movie.title, overView: movie.overView, posterPath: movie.posterPath)
+    }
 }
 
 extension Movie: Hashable {

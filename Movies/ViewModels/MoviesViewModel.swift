@@ -22,15 +22,17 @@ protocol MoviesViewModelProtocol {
 class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
     private let moviesService: MoviesServiceProtocol
     private let serviceConfig: ServiceConfigurationProtocol
+    private let databaseManager: DatabaseManager
     private let flowCoordinatorFactory: FlowCoordinatorFactory
     @Published var dataSource: [MoviesCellViewModel] = []
     var isLoading = CurrentValueSubject<Bool, Never>(false)
     var goToMovie = PassthroughSubject<Void, Never>()
     var lastDownloadedPage = 0
     
-    init(moviesService: MoviesServiceProtocol, serviceConfiguration: ServiceConfigurationProtocol, flowCoordinatorFactory: FlowCoordinatorFactory) {
+    init(moviesService: MoviesServiceProtocol, serviceConfiguration: ServiceConfigurationProtocol, databaseManager: DatabaseManager, flowCoordinatorFactory: FlowCoordinatorFactory) {
         self.moviesService = moviesService
         self.serviceConfig = serviceConfiguration
+        self.databaseManager = databaseManager
         self.flowCoordinatorFactory = flowCoordinatorFactory
     }
     
@@ -44,12 +46,20 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
         let movies = await moviesService.fetchPopularMovies(page: lastDownloadedPage)
 
         if let result = try? movies.result.get() {
-            var cells = [MoviesCellViewModel]()
-            _ = result.results.compactMap {
-                let movieVM = MoviesCellViewModel(movie: Movie.transform(movie: $0, configuration: serviceConfig)!)
-                cells.append(movieVM)
+            let moviesDB = result.results.compactMap { apiMovie in
+                MovieDB.transform(movie:apiMovie, configuration:serviceConfig)
             }
-            dataSource.append(contentsOf: cells)
+            DispatchQueue.main.async {
+                var cells = [MoviesCellViewModel]()
+                self.databaseManager.save(objects: moviesDB)
+                let movieVM: [MoviesCellViewModel] = self.databaseManager.get(type: MovieDB.self)?.compactMap({ movieDB in
+                    Movie.transform(movie: movieDB.freeze())
+                }).compactMap({ movie in
+                    MoviesCellViewModel(movie: movie)
+                }) ?? []
+                cells.append(contentsOf: movieVM)
+                self.dataSource.append(contentsOf: cells)
+            }
         } else {
             dataSource.append(contentsOf: [])
             lastDownloadedPage -= 1

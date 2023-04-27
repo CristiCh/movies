@@ -68,7 +68,7 @@ final class MoviesServiceTests: XCTestCase {
             XCTAssertNotNil(exception)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 2.0)
     }
     
     func testMovieDetailsOK() {
