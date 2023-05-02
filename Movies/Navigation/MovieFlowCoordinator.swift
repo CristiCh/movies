@@ -14,7 +14,7 @@ class MovieFlowCoordinator: GeneralFlowCoordinator {
     private let navigationController: UINavigationController
     
     required init(navigationController: UINavigationController!, movieID: String) {
-        self.viewModel = MovieViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()), serviceConfiguration: ServiceConfiguration())
+        self.viewModel = MovieViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()), serviceConfiguration: ServiceConfiguration(), databaseManager: DatabaseManager())
         self.movieID = movieID
         self.navigationController = navigationController
         super.init()

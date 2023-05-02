@@ -9,7 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct MovieView: View {
-    @StateObject var viewModel: MovieViewModel = MovieViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()), serviceConfiguration: ServiceConfiguration())
+    @StateObject var viewModel: MovieViewModel = MovieViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()), serviceConfiguration: ServiceConfiguration(), databaseManager: DatabaseManager())
     var movieID: String
     
     var body: some View {
@@ -53,6 +53,6 @@ struct MovieView: View {
 
 struct MovieView_Previews: PreviewProvider {
     static var previews: some View {
-        MovieView(viewModel: MovieViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()), serviceConfiguration: ServiceConfiguration()), movieID: "123")
+        MovieView(viewModel: MovieViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()), serviceConfiguration: ServiceConfiguration(), databaseManager: DatabaseManager()), movieID: "123")
     }
 }

@@ -24,11 +24,12 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
     private let serviceConfig: ServiceConfigurationProtocol
     private let databaseManager: DatabaseManager
     private let flowCoordinatorFactory: FlowCoordinatorFactory
+    private var cancellables: Set<AnyCancellable> = []
     @Published var dataSource: [MoviesCellViewModel] = []
     var isLoading = CurrentValueSubject<Bool, Never>(false)
     var goToMovie = PassthroughSubject<Void, Never>()
     var lastDownloadedPage = 0
-    var cancellables: Set<AnyCancellable> = []
+    
     
     init(moviesService: MoviesServiceProtocol, serviceConfiguration: ServiceConfigurationProtocol, databaseManager: DatabaseManager, flowCoordinatorFactory: FlowCoordinatorFactory) {
         self.moviesService = moviesService
@@ -77,7 +78,6 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
                 .receive(on: DispatchQueue.main)
                 .sink(receiveCompletion: { _ in
                 }, receiveValue: { results in
-                    print(results.count)
                     var cells = [MoviesCellViewModel]()
                     
                     let movieVM: [MoviesCellViewModel] = self.databaseManager.get(type: MovieDB.self)?.compactMap({ movieDB in
