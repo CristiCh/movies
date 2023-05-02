@@ -28,6 +28,7 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
     var isLoading = CurrentValueSubject<Bool, Never>(false)
     var goToMovie = PassthroughSubject<Void, Never>()
     var lastDownloadedPage = 0
+    var cancellables: Set<AnyCancellable> = []
     
     init(moviesService: MoviesServiceProtocol, serviceConfiguration: ServiceConfigurationProtocol, databaseManager: DatabaseManager, flowCoordinatorFactory: FlowCoordinatorFactory) {
         self.moviesService = moviesService
@@ -37,6 +38,10 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
     }
     
     func getMovies() async {
+        if lastDownloadedPage == 0 {
+            loadFromDatabase()
+        }
+        
         if isLoading.value == true {
             return
         }
@@ -50,16 +55,12 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
                 MovieDB.transform(movie:apiMovie, configuration:serviceConfig)
             }
             DispatchQueue.main.async {
-                var cells = [MoviesCellViewModel]()
+                if self.lastDownloadedPage == 1 {
+                    self.databaseManager.delete(type: MovieDB.self)
+                }
                 self.databaseManager.save(objects: moviesDB)
-                let movieVM: [MoviesCellViewModel] = self.databaseManager.get(type: MovieDB.self)?.compactMap({ movieDB in
-                    Movie.transform(movie: movieDB.freeze())
-                }).compactMap({ movie in
-                    MoviesCellViewModel(movie: movie)
-                }) ?? []
-                cells.append(contentsOf: movieVM)
-                self.dataSource.append(contentsOf: cells)
             }
+            
         } else {
             dataSource.append(contentsOf: [])
             lastDownloadedPage -= 1
@@ -67,9 +68,35 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
         isLoading.send(false)
     }
     
+    func loadFromDatabase() {
+        DispatchQueue.main.async {
+            self.databaseManager.get(type: MovieDB.self)?
+                .collectionPublisher
+                .subscribe(on: DispatchQueue(label: "BackgroundQueue"))
+                .freeze()
+                .receive(on: DispatchQueue.main)
+                .sink(receiveCompletion: { _ in
+                }, receiveValue: { results in
+                    print(results.count)
+                    var cells = [MoviesCellViewModel]()
+                    
+                    let movieVM: [MoviesCellViewModel] = self.databaseManager.get(type: MovieDB.self)?.compactMap({ movieDB in
+                        Movie.transform(movie: movieDB.freeze())
+                    }).compactMap({ movie in
+                        MoviesCellViewModel(movie: movie)
+                    }) ?? []
+                    cells.append(contentsOf: movieVM)
+                    self.dataSource = cells
+                }).store(in: &self.cancellables)
+        }
+    }
+    
     func refreshPopularMovies() async {
-        dataSource = []
-        lastDownloadedPage = 0
+        await MainActor.run {
+            cancellables = []
+            dataSource = []
+            lastDownloadedPage = 0
+        }
         await getMovies()
     }
     

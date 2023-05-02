@@ -26,11 +26,24 @@ struct MoviesView: View {
                                     MovieCellView(movie: movie)
                                 }
                             }
+                            if viewModel.dataSource.count > 0 {
+                                Text("")
+                                    .onAppear {
+                                        Task {
+                                            await viewModel.getMovies()
+                                        }
+                                    }
+                            }
                         }
                         .padding(.top, geo.safeAreaInsets.top)
                     }
                     .edgesIgnoringSafeArea(.all)
                     .background(Color.black)
+                    .refreshable {
+                        Task {
+                            await viewModel.refreshPopularMovies()
+                        }
+                    }
                 }
             }
             .navigationDestination(for: Movie.self) { movie in
