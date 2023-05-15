@@ -17,7 +17,7 @@ class MoviesFlowCoordinator: GeneralFlowCoordinator {
     required init(window: UIWindow?, scene: UIScene?) {
         self.viewModel = MoviesViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()),
                                          serviceConfiguration: ServiceConfiguration(),
-                                         databaseManager: DatabaseManager(),
+                                         databaseManager: DatabaseManager(configuration: DatabaseConfiguration()),
                                          flowCoordinatorFactory: FlowCoordinatorFactory())
         self.window = window
         self.scene = scene
@@ -27,7 +27,7 @@ class MoviesFlowCoordinator: GeneralFlowCoordinator {
     override func start() {
         let contentView = MoviesView(viewModel: MoviesViewModel(moviesService: MoviesService(configuration: ServiceConfiguration()),
                                                                 serviceConfiguration: ServiceConfiguration(),
-                                                                databaseManager: DatabaseManager(),
+                                                                databaseManager: DatabaseManager(configuration: DatabaseConfiguration()),
                                                                 flowCoordinatorFactory: FlowCoordinatorFactory()))
         if let widowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: widowScene)

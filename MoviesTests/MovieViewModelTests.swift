@@ -14,12 +14,19 @@ import Combine
 final class MovieViewModelTests: XCTestCase {
     var movieViewModel: MovieViewModel!
     var mockMovieService: MockMovieService!
+    var databaseName: String {
+        get {
+            "\(Double.random(in: 0.0...100.0))_\(Date().timeIntervalSince1970)).realm"
+        }
+    }
+    var databaseConfiguration: DatabaseConfiguration!
     private var cancellables: Set<AnyCancellable>!
     
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockMovieService = MockMovieService()
-        movieViewModel = MovieViewModel(moviesService: mockMovieService, serviceConfiguration: MockServiceConfiguration())
+        databaseConfiguration = DatabaseConfiguration(writeType: WriteType.Memory, databaseName: databaseName)
+        movieViewModel = MovieViewModel(moviesService: mockMovieService, serviceConfiguration: MockServiceConfiguration(), databaseManager: DatabaseManager(configuration: databaseConfiguration))
         cancellables = Set<AnyCancellable>()
     }
     

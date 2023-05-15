@@ -25,7 +25,6 @@ struct BackButtonView: View {
 }
 
 struct IconButtonDefault: ButtonStyle {
-    
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .scaleEffect(configuration.isPressed ? 1.4 : 1.0)

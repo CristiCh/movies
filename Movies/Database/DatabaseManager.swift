@@ -9,16 +9,22 @@ import RealmSwift
 
 class DatabaseManager {
     private var database: Realm?
-    private var databaseName: String = "Movies.realm"
-    private var schemaVersion: UInt64 = 1
     
-    init() {
-        var configuration = Realm.Configuration()
-        configuration.fileURL = configuration.fileURL?.deletingLastPathComponent().appendingPathComponent(databaseName)
-        configuration.readOnly = false
-        configuration.schemaVersion = schemaVersion
-        configuration.objectTypes = [MovieDB.self]
-        self.database = try? Realm(configuration: configuration)
+    init(configuration: DatabaseConfiguration) {
+        var dbConfig = Realm.Configuration()
+        switch configuration.writeType {
+        case .Disk:
+            dbConfig.fileURL = dbConfig.fileURL?.deletingLastPathComponent().appendingPathComponent(configuration.databaseName)
+            break
+        case .Memory:
+            dbConfig.fileURL = nil
+            dbConfig.inMemoryIdentifier = configuration.databaseName
+            break
+        }
+        dbConfig.readOnly = false
+        dbConfig.schemaVersion = configuration.schemaVersion
+        dbConfig.objectTypes = [MovieDB.self]
+        self.database = try? Realm(configuration: dbConfig)
     }
     
     func get<T: Object>(type: T.Type) -> Results<T>? {

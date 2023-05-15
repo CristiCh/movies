@@ -14,18 +14,28 @@ import Combine
 final class MoviesViewModelTests: XCTestCase {
     var moviesViewModel: MoviesViewModel!
     var mockMovieService: MockMovieService!
+    var databaseName: String {
+        get {
+            "\(Double.random(in: 0.0...100.0))_\(Date().timeIntervalSince1970).realm"
+        }
+    }
+    var databaseConfiguration: DatabaseConfiguration!
     private var cancellables: Set<AnyCancellable>!
     
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockMovieService = MockMovieService()
-        moviesViewModel = MoviesViewModel(moviesService: mockMovieService, serviceConfiguration: MockServiceConfiguration(), flowCoordinatorFactory: MockFlowCoordinatorFactory())
+        let databaseName = databaseName
+        print(databaseName)
+        databaseConfiguration = DatabaseConfiguration(writeType: WriteType.Memory, databaseName: databaseName)
+        moviesViewModel = MoviesViewModel(moviesService: mockMovieService, serviceConfiguration: MockServiceConfiguration(), databaseManager: DatabaseManager(configuration: databaseConfiguration), flowCoordinatorFactory: MockFlowCoordinatorFactory())
         cancellables = Set<AnyCancellable>()
     }
     
     override func tearDownWithError() throws {
         moviesViewModel = nil
         mockMovieService = nil
+        databaseConfiguration = nil
         cancellables = nil
         try super.tearDownWithError()
     }
@@ -76,12 +86,13 @@ final class MoviesViewModelTests: XCTestCase {
     
     func testFistPageOkSecondPageWrong() {
         let expectation = XCTestExpectation(description: "testGetMovies")
+        let expectation1 = XCTestExpectation(description: "expectation1")
         let apiObject1 = ApiMovie(id: 123, title: "Title1", overview: "Overview1", posterPath: "PosterPath1")
         let apiObject2 = ApiMovie(id: 100, title: "Title2", overview: "Overview2", posterPath: "PosterPath2")
         let paginator = MoviesPaginator(page: 1, totalPages: 1, totalResults: 2, results: [apiObject1, apiObject2])
         mockMovieService.popularMovies = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .success(paginator))
         XCTAssertEqual(moviesViewModel.lastDownloadedPage, 0)
-        moviesViewModel.$dataSource.collect(4).sink { moviesCellViewModel in
+        moviesViewModel.$dataSource.collect(5).sink { moviesCellViewModel in
             let firstMovieCellViewModel = moviesCellViewModel[1]
             XCTAssertEqual(firstMovieCellViewModel.count, 2)
             XCTAssertNotNil(firstMovieCellViewModel)
@@ -98,7 +109,7 @@ final class MoviesViewModelTests: XCTestCase {
             XCTAssertEqual(secondMovieCellViewModel[0].movie.overView, "Overview1")
             XCTAssertEqual(secondMovieCellViewModel[0].movie.posterPath, "https://image.tmdb.org/t/p/original/PosterPath1")
 
-            let thirdMovieCellViewModel = moviesCellViewModel[3]
+            let thirdMovieCellViewModel = moviesCellViewModel[4]
             XCTAssertEqual(thirdMovieCellViewModel.count, 4)
             XCTAssertNotNil(thirdMovieCellViewModel)
             XCTAssertEqual(thirdMovieCellViewModel[0].movie.id, "123")
@@ -111,28 +122,31 @@ final class MoviesViewModelTests: XCTestCase {
         
         Task {
             await moviesViewModel.getMovies()
+            sleep(1)
             
             mockMovieService.popularMovies = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .failure(ConfigError(code: 501, message: "DataRequset is nil")))
-            
+
             XCTAssertEqual(self.mockMovieService.fetchPopularMovieCounter, 1)
             XCTAssertEqual(self.moviesViewModel.lastDownloadedPage, 1)
-            
+
             await moviesViewModel.getMovies()
+            sleep(1)
             
             XCTAssertEqual(self.mockMovieService.fetchPopularMovieCounter, 2)
             XCTAssertEqual(self.moviesViewModel.lastDownloadedPage, 1)
-            
+
             let apiObject3 = ApiMovie(id: 124, title: "Title3", overview: "Overview3", posterPath: "PosterPath3")
             let apiObject4 = ApiMovie(id: 101, title: "Title4", overview: "Overview4", posterPath: "PosterPath4")
             let paginator2 = MoviesPaginator(page: 1, totalPages: 1, totalResults: 2, results: [apiObject3, apiObject4])
             mockMovieService.popularMovies = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .success(paginator2))
-            
+
             await moviesViewModel.getMovies()
+            sleep(1)
             
             XCTAssertEqual(self.mockMovieService.fetchPopularMovieCounter, 3)
             XCTAssertEqual(self.moviesViewModel.lastDownloadedPage, 2)
+            expectation1.fulfill()
         }
-        wait(for: [expectation], timeout: 3.0)
+        wait(for: [expectation, expectation1], timeout: 5.0)
     }
-    
 }
