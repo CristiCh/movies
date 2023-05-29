@@ -16,7 +16,12 @@ struct Movie: Identifiable {
     var posterPath: String?
     
     static func transform(movie: ApiMovie, configuration: ServiceConfigurationProtocol) -> Movie? {
-        Movie(id: "\(movie.id)", title: movie.title, overView: movie.overview, posterPath: "\(configuration.imagesURL)\(movie.posterPath)")
+        var image: String? = nil
+        if let posterPath = movie.posterPath {
+            image = "\(configuration.imagesURL)\(posterPath)"
+        }
+        
+        return Movie(id: "\(movie.id)", title: movie.title, overView: movie.overview, posterPath: image)
     }
     
     static func transform(movie: MovieDB) -> Movie? {

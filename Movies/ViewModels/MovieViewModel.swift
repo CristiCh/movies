@@ -21,6 +21,7 @@ class MovieViewModel: MovieViewModelProtocol, ObservableObject {
     private let databaseManager: DatabaseManager
     private var cancellables: Set<AnyCancellable> = []
     @Published var movie: Movie? = nil
+    @Published var dataSource: [MoviesCellViewModel] = []
     @Published var isLoading: Bool = false
     
     init(moviesService: MoviesServiceProtocol, serviceConfiguration: ServiceConfigurationProtocol, databaseManager: DatabaseManager) {
@@ -43,6 +44,30 @@ class MovieViewModel: MovieViewModelProtocol, ObservableObject {
                 }
             }
         }
+        
+        Task {
+            let relatedMovies = await moviesService.fetchRelatedMovies(movieId: movieID, page: 1)
+            
+            if let result = try? relatedMovies.result.get() {
+                let moviesDB = result.results.compactMap { apiMovie in
+                    MovieDB.transform(movie:apiMovie, configuration:serviceConfig)
+                }
+                let carouselDB = CarouselDB(id: "movie_\(movieID)", movies: moviesDB)
+                
+                DispatchQueue.main.async {
+                    self.databaseManager.save(objects: [carouselDB])
+                }
+                
+//                let movies = result.results.compactMap { apiMovie in
+//                    Movie.transform(movie:apiMovie, configuration: serviceConfig)
+//                }.compactMap { movie in
+//                    MoviesCellViewModel(movie: movie)
+//                }
+//                dataSource.append(contentsOf: movies)
+            } else {
+                dataSource.append(contentsOf: [])
+            }
+        }
     }
     
     private func loadFromDatabase() {
@@ -62,6 +87,32 @@ class MovieViewModel: MovieViewModelProtocol, ObservableObject {
                             await self.setMovieData(movie: movie)
                         } else {
                             await self.setMovieData(movie: nil)
+                        }
+                    }
+                }).store(in: &self.cancellables)
+        }
+        
+        DispatchQueue.main.async {
+            self.databaseManager.get(type: CarouselDB.self, query: {
+                $0.id.equals("movie_\(self.movieID ?? "")")
+            })?
+                .collectionPublisher
+                .subscribe(on: DispatchQueue(label: "BackgroundQueue"))
+                .freeze()
+                .receive(on: DispatchQueue.main)
+                .sink(receiveCompletion: { _ in
+                }, receiveValue: { results in
+                    Task {
+                        if results.count == 1, let carouselDB = results.first {
+                            var cells = [MoviesCellViewModel]()
+                            
+                            let movieVM: [MoviesCellViewModel] = carouselDB.movies.compactMap({ movieDB in
+                                Movie.transform(movie: movieDB.freeze())
+                            }).compactMap({ movie in
+                                MoviesCellViewModel(movie: movie)
+                            })
+                            cells.append(contentsOf: movieVM)
+                            self.dataSource = cells
                         }
                     }
                 }).store(in: &self.cancellables)

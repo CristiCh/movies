@@ -23,7 +23,7 @@ class DatabaseManager {
         }
         dbConfig.readOnly = false
         dbConfig.schemaVersion = configuration.schemaVersion
-        dbConfig.objectTypes = [MovieDB.self]
+        dbConfig.objectTypes = [MovieDB.self, CarouselDB.self]
         self.database = try? Realm(configuration: dbConfig)
     }
     

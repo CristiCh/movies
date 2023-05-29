@@ -61,7 +61,6 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
                 }
                 self.databaseManager.save(objects: moviesDB)
             }
-            
         } else {
             dataSource.append(contentsOf: [])
             lastDownloadedPage -= 1

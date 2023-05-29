@@ -12,7 +12,7 @@ struct ApiMovie: Codable {
     var id: Int64
     var title: String
     var overview: String
-    var posterPath: String
+    var posterPath: String?
     var language: String?
     
     private enum CodingKeys : String, CodingKey {

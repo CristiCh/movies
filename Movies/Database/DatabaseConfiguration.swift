@@ -15,5 +15,5 @@ enum WriteType {
 struct DatabaseConfiguration {
     var writeType: WriteType = .Disk
     var databaseName: String = "Movies.realm"
-    var schemaVersion: UInt64 = 1
+    var schemaVersion: UInt64 = 2
 }

@@ -14,7 +14,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         if isRunningTest() {
             guard let windowScene = (scene as? UIWindowScene) else { return }
-
             window = UIWindow(windowScene: windowScene)
             window?.rootViewController = TestingRootViewController()
             window?.makeKeyAndVisible()

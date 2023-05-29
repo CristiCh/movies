@@ -71,6 +71,11 @@ struct MovieCellView: View {
                         .renderingMode(.original)
                         .resizable()
                         .clipped()
+                } else {
+                    Image("placeholder1")
+                        .renderingMode(.original)
+                        .resizable()
+                        .clipped()
                 }
             }
     }

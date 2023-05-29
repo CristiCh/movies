@@ -12,6 +12,7 @@ import Alamofire
 protocol MoviesServiceProtocol {
     func fetchPopularMovies(page: Int) async -> DataResponse<MoviesPaginator<ApiMovie>, Error>
     func fetchMovie(movieId: String) async -> DataResponse<ApiMovie, Error>
+    func fetchRelatedMovies(movieId: String, page: Int) async -> DataResponse<MoviesPaginator<ApiMovie>, Error>
 }
 
 class MoviesService {
@@ -52,5 +53,13 @@ extension MoviesService: MoviesServiceProtocol {
         }
         
         return await sessionManager.request(url, method: .get).processResponse(type: ApiMovie.self)
+    }
+    
+    func fetchRelatedMovies(movieId: String, page: Int) async -> DataResponse<MoviesPaginator<ApiMovie>, Error> {
+        guard let apiKey = apiKey,
+            let url = URL(string: "\(baseURL)\(movieId)/recommendations?page=\(page)&api_key=\(apiKey)") else {
+            return DataRequest.getDataResponseError(error: ConfigError(code: 500, message: "Wrong URL"))
+        }
+        return await sessionManager.request(url, method: .get).processResponse(type: MoviesPaginator<ApiMovie>.self)
     }
 }

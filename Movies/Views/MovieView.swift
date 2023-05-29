@@ -22,6 +22,11 @@ struct MovieView: View {
                         .aspectRatio(contentMode: .fill)
                         .frame(width: geo.size.width, height: geo.size.height)
                         .clipped()
+                } else {
+                    Image("placeholder1")
+                        .renderingMode(.original)
+                        .resizable()
+                        .clipped()
                 }
             }
             Color.black
@@ -34,6 +39,17 @@ struct MovieView: View {
                     .padding(.top, 8)
                     .padding(.horizontal)
                     .font(.headline)
+                if viewModel.dataSource.count > 0 {
+                    ScrollView(.horizontal) {
+                        LazyHStack(alignment: .bottom) {
+                            ForEach(viewModel.dataSource) { movie in
+                                NavigationLink(value: movie.movie) {
+                                    MovieCellView(movie: movie)
+                                }
+                            }
+                        }.frame(height: 180)
+                    }
+                }
             }
             .foregroundColor(.white)
             .padding()

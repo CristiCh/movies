@@ -24,7 +24,12 @@ class MovieDB: Object {
     }
     
     static func transform(movie: ApiMovie, configuration: ServiceConfigurationProtocol) -> MovieDB? {
-        MovieDB(id: "\(movie.id)", imdbId: nil, title: movie.title, overView: movie.overview, posterPath: "\(configuration.imagesURL)\(movie.posterPath)")
+        var image: String? = nil
+        if let posterPath = movie.posterPath {
+            image = "\(configuration.imagesURL)\(posterPath)"
+        }
+        
+        return MovieDB(id: "\(movie.id)", imdbId: nil, title: movie.title, overView: movie.overview, posterPath: image)
     }
 }
 
