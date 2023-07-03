@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import FirebaseFirestoreSwift
 
-struct Movie: Identifiable {
+struct Movie: Identifiable, Codable {
     var id: String
     var imdbId: String?
     var title: String
@@ -25,7 +26,7 @@ struct Movie: Identifiable {
     }
     
     static func transform(movie: MovieDB) -> Movie? {
-        Movie(id: "\(movie.id)", imdbId: nil, title: movie.title, overView: movie.overView, posterPath: movie.posterPath)
+        Movie(id: "\(movie.id)", imdbId: movie.imdbId, title: movie.title, overView: movie.overView, posterPath: movie.posterPath)
     }
 }
 

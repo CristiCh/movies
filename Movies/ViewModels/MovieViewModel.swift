@@ -7,6 +7,10 @@
 
 import Foundation
 import Combine
+import FirebaseCore
+import FirebaseFirestore
+import FirebaseAuth
+import FirebaseAnalytics
 
 protocol MovieViewModelProtocol {
     func loadMovieData(movieID: String)
@@ -23,6 +27,7 @@ class MovieViewModel: MovieViewModelProtocol, ObservableObject {
     @Published var movie: Movie? = nil
     @Published var dataSource: [MoviesCellViewModel] = []
     @Published var isLoading: Bool = false
+    @Published var isFavorite: Bool = false
     
     init(moviesService: MoviesServiceProtocol, serviceConfiguration: ServiceConfigurationProtocol, databaseManager: DatabaseManager) {
         self.moviesService = moviesService
@@ -57,17 +62,12 @@ class MovieViewModel: MovieViewModelProtocol, ObservableObject {
                 DispatchQueue.main.async {
                     self.databaseManager.save(objects: [carouselDB])
                 }
-                
-//                let movies = result.results.compactMap { apiMovie in
-//                    Movie.transform(movie:apiMovie, configuration: serviceConfig)
-//                }.compactMap { movie in
-//                    MoviesCellViewModel(movie: movie)
-//                }
-//                dataSource.append(contentsOf: movies)
             } else {
                 dataSource.append(contentsOf: [])
             }
         }
+        loadFavorite(movieID: movieID)
+        Analytics.logEvent("Movie_detail", parameters: ["MovieID": "\(movieID)"])
     }
     
     private func loadFromDatabase() {
@@ -123,6 +123,57 @@ class MovieViewModel: MovieViewModelProtocol, ObservableObject {
         await MainActor.run {
             self.movie = movie
             self.isLoading = false
+        }
+    }
+    
+    func saveFavorite(movie: Movie?) {
+        let db = Firestore.firestore()
+        guard let userId = Auth.auth().currentUser?.uid, let movie = movie else {
+            print("Missing userID")
+            return
+        }
+        try? db.collection("users").document(userId).collection("favorites").document(movie.id).setData(from: movie) { err in
+            if let err = err {
+                print("Error adding document: \(err)")
+            } else {
+                self.isFavorite = true
+                print("Document added with ID: \(movie.id)")
+            }
+        }
+    }
+    
+    func deleteFavorite(movieID: String?) {
+        let db = Firestore.firestore()
+        guard let userId = Auth.auth().currentUser?.uid, let movieID = movieID else {
+            print("Missing userID")
+            return
+        }
+        
+        db.collection("users").document(userId).collection("favorites").document(movieID).delete { err in
+            if let err = err {
+                print("Error deleting document: \(err)")
+            } else {
+                self.isFavorite = false
+                print("Document deleted with ID: \(movieID)")
+            }
+        }
+    }
+    
+    func loadFavorite(movieID: String) {
+        let db = Firestore.firestore()
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("Missing userID")
+            return
+        }
+        
+        db.collection("users").document(userId).collection("favorites").document(movieID).getDocument { document, err in
+            if let document = document, document.exists {
+                self.isFavorite = true
+                print("Document with ID \(movieID) exists")
+            } else {
+                self.isFavorite = false
+                print("Document does not exist")
+            }
         }
     }
 }

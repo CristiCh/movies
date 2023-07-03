@@ -6,10 +6,14 @@
 //
 
 import SwiftUI
+import UIKit
 import Combine
 import Kingfisher
+import FirebaseCrashlytics
+import FirebaseAnalytics
 
 struct MoviesView: View {
+    
     @StateObject var viewModel: MoviesViewModel
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     @State private var navigateToMovieDetail: Bool = false
@@ -20,28 +24,21 @@ struct MoviesView: View {
             VStack {
                 GeometryReader { geo in
                     ScrollView {
-                        LazyVGrid(columns: columns, spacing: 0) {
-                            ForEach(viewModel.dataSource) { movie in
-                                NavigationLink(value: movie.movie) {
-                                    MovieCellView(movie: movie)
+                        VStack {
+                            FavoriteMovieCarousel(dataSource: viewModel.dataSource.count >= 5 ? Array(viewModel.dataSource.prefix(upTo: 5)) : viewModel.dataSource)
+                            MovieCarousel(title: "Recommended", dataSource: viewModel.dataSource, loadMore: {
+                                Task {
+                                    await viewModel.getMovies()
                                 }
-                            }
-                            if viewModel.dataSource.count > 0 {
-                                Text("")
-                                    .onAppear {
-                                        Task {
-                                            await viewModel.getMovies()
-                                        }
-                                    }
-                            }
+                            })
+                            MovieCarousel(title: "Favorites", dataSource: viewModel.favoriteDataSource)
                         }
-                        .padding(.top, geo.safeAreaInsets.top)
                     }
                     .edgesIgnoringSafeArea(.all)
                     .background(Color.black)
                     .refreshable {
                         Task {
-                            await viewModel.refreshPopularMovies()
+                            await viewModel.refresh()
                         }
                     }
                 }
@@ -56,6 +53,84 @@ struct MoviesView: View {
                 await viewModel.getMovies()
             }
         }
+    }
+}
+
+struct MovieCarousel: View {
+    var title: String
+    var dataSource: [MoviesCellViewModel]
+    var loadMore: () -> Void = {}
+    var body: some View {
+        if dataSource.count > 0 {
+            VStack {
+                HStack {
+                    Text(title)
+                        .foregroundColor(.white)
+                        .font(.title)
+                    Spacer()
+                }
+                ScrollView(.horizontal) {
+                    LazyHStack(alignment: .bottom) {
+                        ForEach(dataSource) { movie in
+                            NavigationLink(value: movie.movie) {
+                                MovieCellView(movie: movie)
+                            }
+                        }
+                        if dataSource.count > 0 {
+                            Text("")
+                                .onAppear {
+                                    loadMore()
+                                }
+                        }
+                    }.frame(height: 180)
+                }
+            }
+        }
+    }
+}
+
+struct FavoriteMovieCarousel: View {
+    var dataSource: [MoviesCellViewModel]
+    var height: CGFloat = 500
+    var body: some View {
+        GeometryReader { geo in
+            TabView {
+                ForEach(dataSource) { movie in
+                    NavigationLink(value: movie.movie) {
+                        MovieCellView(movie: movie)
+                            .frame(width: geo.size.width, height: height)
+                    }
+                }
+            }
+            .tabViewStyle(.page)
+            .indexViewStyle(.page(backgroundDisplayMode: .always))
+            .onAppear{
+                setupAppearance()
+            }
+        }
+        .frame(height: height)
+    }
+    
+    func setupAppearance() {
+        UIPageControl.appearance().currentPageIndicatorTintColor = .red
+        UIPageControl.appearance().pageIndicatorTintColor = .blue
+    }
+}
+
+struct PageIndicatorView : View {
+    var numberOfElements: Int
+    var selectedIndex: Int
+    var body: some View {
+        HStack {
+            if numberOfElements > 1 {
+                ForEach(1...numberOfElements , id: \.self) { index in
+                    Circle()
+                        .foregroundColor(selectedIndex + 1 == index ? .red : .white)
+                        .frame(width: 18, height: 18)
+                }
+            }
+        }
+        .padding(.bottom, 20)
     }
 }
 

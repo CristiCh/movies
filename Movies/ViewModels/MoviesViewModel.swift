@@ -8,6 +8,10 @@
 
 import UIKit
 import Combine
+import FirebaseCore
+import FirebaseFirestore
+import FirebaseAuth
+import FirebaseFirestoreSwift
 
 protocol MoviesViewModelProtocol {
     func getMovies() async
@@ -26,6 +30,7 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
     private let flowCoordinatorFactory: FlowCoordinatorFactory
     private var cancellables: Set<AnyCancellable> = []
     @Published var dataSource: [MoviesCellViewModel] = []
+    @Published var favoriteDataSource: [MoviesCellViewModel] = []
     var isLoading = CurrentValueSubject<Bool, Never>(false)
     var goToMovie = PassthroughSubject<Void, Never>()
     var lastDownloadedPage = 0
@@ -66,6 +71,7 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
             lastDownloadedPage -= 1
         }
         isLoading.send(false)
+        loadFavorites()
     }
     
     func loadFromDatabase() {
@@ -90,6 +96,29 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
         }
     }
     
+    func loadFavorites() {
+        let db = Firestore.firestore()
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("Missing userID")
+            return
+        }
+        
+        db.collection("users").document(userId).collection("favorites").getDocuments { snapshot, err in
+            self.favoriteDataSource = []
+            if let err = err {
+                print("Error: \(err)")
+            } else {
+                for document in snapshot!.documents {
+                    print("\(document.data())")
+                    if let jsonData = try? JSONSerialization.data(withJSONObject: document.data(), options: []), let movie = try? JSONDecoder().decode(Movie.self, from: jsonData) {
+                        let moviesCellVM = MoviesCellViewModel(movie: movie)
+                        self.favoriteDataSource.append(moviesCellVM)
+                    }
+                }
+            }
+        }
+    }
+    
     func refreshPopularMovies() async {
         await MainActor.run {
             cancellables = []
@@ -97,6 +126,10 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
             lastDownloadedPage = 0
         }
         await getMovies()
+    }
+    
+    func refresh() async {
+        await refreshPopularMovies()
     }
     
     func goToMovie(movieID: String, navigationController: UINavigationController?) {

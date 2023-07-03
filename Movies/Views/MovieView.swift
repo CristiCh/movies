@@ -54,10 +54,19 @@ struct MovieView: View {
             .foregroundColor(.white)
             .padding()
             .padding(.bottom, 32)
-
-            BackButtonView()
-        .padding(.top, 50)
-        .padding(.leading, 24)
+            HStack {
+                BackButtonView()
+                Spacer()
+                FavoriteButtonView(isFavorite: viewModel.isFavorite) {
+                    if viewModel.isFavorite {
+                        viewModel.deleteFavorite(movieID: viewModel.movie?.id)
+                    } else {
+                        viewModel.saveFavorite(movie: viewModel.movie)
+                    }
+                }
+            }
+            .padding(.top, 50)
+            .padding(.horizontal, 24)
         }
         .edgesIgnoringSafeArea(.all)
         .navigationBarBackButtonHidden()
