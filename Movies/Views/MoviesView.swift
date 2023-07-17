@@ -18,33 +18,39 @@ struct MoviesView: View {
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     @State private var navigateToMovieDetail: Bool = false
     @State private var selectedMovie: Movie? = nil
+    @StateObject private var minVersionViewModel: MinVersionCheckViewModel = MinVersionCheckViewModel()
     
     var body: some View {
         NavigationStack {
-            VStack {
-                GeometryReader { geo in
-                    ScrollView {
-                        VStack {
-                            FavoriteMovieCarousel(dataSource: viewModel.dataSource.count >= 5 ? Array(viewModel.dataSource.prefix(upTo: 5)) : viewModel.dataSource)
-                            MovieCarousel(title: "Recommended", dataSource: viewModel.dataSource, loadMore: {
-                                Task {
-                                    await viewModel.getMovies()
-                                }
-                            })
-                            MovieCarousel(title: "Favorites", dataSource: viewModel.favoriteDataSource)
+            ZStack {
+                VStack {
+                    GeometryReader { geo in
+                        ScrollView {
+                            VStack {
+                                FavoriteMovieCarousel(dataSource: viewModel.dataSource.count >= 5 ? Array(viewModel.dataSource.prefix(upTo: 5)) : viewModel.dataSource)
+                                MovieCarousel(title: "Recommended", dataSource: viewModel.dataSource, loadMore: {
+                                    Task {
+                                        await viewModel.getMovies()
+                                    }
+                                })
+                                MovieCarousel(title: "Favorites", dataSource: viewModel.favoriteDataSource)
+                            }
                         }
-                    }
-                    .edgesIgnoringSafeArea(.all)
-                    .background(Color.black)
-                    .refreshable {
-                        Task {
-                            await viewModel.refresh()
+                        .edgesIgnoringSafeArea(.all)
+                        .background(Color.black)
+                        .refreshable {
+                            Task {
+                                await viewModel.refresh()
+                            }
                         }
                     }
                 }
-            }
-            .navigationDestination(for: Movie.self) { movie in
-                MovieView(movieID: movie.id)
+                .navigationDestination(for: Movie.self) { movie in
+                    MovieView(movieID: movie.id)
+                }
+                UpgradeModalView(isPresented: minVersionViewModel.shouldUpgrade, minRemoteConfig: minVersionViewModel.remoteConfigMinVersion) { url in
+                    minVersionViewModel.goToAppStore(url: url)
+                }
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -52,6 +58,7 @@ struct MoviesView: View {
             Task {
                 await viewModel.getMovies()
             }
+            minVersionViewModel.getMinVersion()
         }
     }
 }
