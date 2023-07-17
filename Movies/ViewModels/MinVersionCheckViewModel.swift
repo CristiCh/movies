@@ -20,6 +20,22 @@ class MinVersionCheckViewModel: ObservableObject {
         settings.minimumFetchInterval = 0
         remoteConfig?.configSettings = settings
         
+        fetch()
+        remoteConfig?.addOnConfigUpdateListener(remoteConfigUpdateCompletion: { configUpdate, error in
+            if let configKey = configUpdate?.updatedKeys.first(where: {$0 == "Min_Version_iOS"}) {
+                self.fetch()
+            }
+        })
+    }
+    
+    func goToAppStore(url: String) {
+        guard let _url = URL(string: url) else {
+            return
+        }
+        UIApplication.shared.open(_url)
+    }
+    
+    private func fetch() {
         remoteConfig?.fetch { [self] (status, error) -> Void in
             if status == .success {
                 print("Config fetched!")
@@ -40,13 +56,6 @@ class MinVersionCheckViewModel: ObservableObject {
                 self.shouldUpgrade = currentBuild < remoteConfigMinValue.build
             }
         }
-    }
-    
-    func goToAppStore(url: String) {
-        guard let _url = URL(string: url) else {
-            return
-        }
-        UIApplication.shared.open(_url)
     }
 }
 
