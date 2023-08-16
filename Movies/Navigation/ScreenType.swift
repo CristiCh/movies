@@ -10,4 +10,5 @@ import UIKit
 enum ScreenType {
     case home(window: UIWindow?, scene: UIScene?)
     case movieDetail(movieID: String, navigationController: UINavigationController)
+    case login(window: UIWindow?, scene: UIScene?)
 }

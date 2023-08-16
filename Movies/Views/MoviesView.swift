@@ -11,6 +11,7 @@ import Combine
 import Kingfisher
 import FirebaseCrashlytics
 import FirebaseAnalytics
+import FirebaseAuth
 
 struct MoviesView: View {
     
@@ -18,11 +19,12 @@ struct MoviesView: View {
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     @State private var navigateToMovieDetail: Bool = false
     @State private var selectedMovie: Movie? = nil
+    @State private var presentLogin: Bool = false
     @StateObject private var minVersionViewModel: MinVersionCheckViewModel = MinVersionCheckViewModel()
     
     var body: some View {
         NavigationStack {
-            ZStack {
+            ZStack(alignment: .top) {
                 VStack {
                     GeometryReader { geo in
                         ScrollView {
@@ -48,6 +50,20 @@ struct MoviesView: View {
                 .navigationDestination(for: Movie.self) { movie in
                     MovieView(movieID: movie.id)
                 }
+                HStack {
+                    Spacer()
+                    Button {
+                        presentLogin = true
+                    } label: {
+                        ProfileUserView(profilePhoto: viewModel.photoURL)
+                    }.frame(width: 40, height: 40, alignment: .center)
+                        .background(Color.black)
+                        .cornerRadius(16)
+                        .buttonStyle(IconButtonDefault())
+                }.navigationDestination(isPresented: $presentLogin) {
+                    LoginView(viewModel: LoginViewModel())
+                }.padding(.horizontal)
+
                 UpgradeModalView(isPresented: minVersionViewModel.shouldUpgrade, minRemoteConfig: minVersionViewModel.remoteConfigMinVersion) { url in
                     minVersionViewModel.goToAppStore(url: url)
                 }
@@ -59,6 +75,7 @@ struct MoviesView: View {
                 await viewModel.getMovies()
             }
             minVersionViewModel.getMinVersion()
+            viewModel.checkIfUserIsLoggedIn()
         }
     }
 }
@@ -158,6 +175,26 @@ struct MovieCellView: View {
                         .renderingMode(.original)
                         .resizable()
                         .clipped()
+                }
+            }
+    }
+}
+
+struct ProfileUserView: View {
+    var profilePhoto: URL?
+    
+    var body: some View {
+        Color.black.opacity(0)
+            .aspectRatio(4/5, contentMode: .fill)
+            .background {
+                if let url = profilePhoto {
+                    KFImage.url(url)
+                        .renderingMode(.original)
+                        .resizable()
+                        .clipped()
+                } else {
+                    Image(systemName: "person")
+                        .foregroundColor(.white)
                 }
             }
     }

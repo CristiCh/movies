@@ -4,6 +4,17 @@
 <dict>
 	<key>API_KEY</key>
 	<string>$(API_KEY)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.852013502579-v2tveedl6ndh0f7jarogq5jsvquc1p43</string>
+			</array>
+		</dict>
+	</array>
 	<key>TESTING</key>
 	<false/>
 	<key>UIApplicationSceneManifest</key>

@@ -31,6 +31,7 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
     @Published var dataSource: [MoviesCellViewModel] = []
     @Published var favoriteDataSource: [MoviesCellViewModel] = []
+    @Published var photoURL: URL? = nil
     var isLoading = CurrentValueSubject<Bool, Never>(false)
     var goToMovie = PassthroughSubject<Void, Never>()
     var lastDownloadedPage = 0
@@ -135,5 +136,14 @@ class MoviesViewModel: MoviesViewModelProtocol, ObservableObject {
     func goToMovie(movieID: String, navigationController: UINavigationController?) {
         guard let navController = navigationController else { return }
         flowCoordinatorFactory.create(type: .movieDetail(movieID: movieID, navigationController:navController)).start()
+    }
+    
+    func checkIfUserIsLoggedIn() {
+        self.photoURL = Auth.auth().currentUser?.photoURL
+        
+        Auth.auth().addStateDidChangeListener { auth, user in
+            print(user?.uid)
+            self.photoURL = user?.photoURL
+        }
     }
 }
