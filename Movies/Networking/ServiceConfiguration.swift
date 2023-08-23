@@ -12,10 +12,12 @@ protocol ServiceConfigurationProtocol {
     var apiKey: String? { get }
     var baseURL: String { get }
     var imagesURL: String { get }
+    var logLevel: NetworkLogger.LogLevel { get }
 }
 
 class ServiceConfiguration: ServiceConfigurationProtocol {
     let apiKey: String? = Bundle.main.infoDictionary?["API_KEY"] as? String
     let baseURL: String = "https://api.themoviedb.org/3/movie/"
     let imagesURL: String = "https://image.tmdb.org/t/p/original/"
+    let logLevel: NetworkLogger.LogLevel = .basic
 }

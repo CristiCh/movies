@@ -32,7 +32,7 @@ class MoviesService {
     init(configuration: ServiceConfigurationProtocol, protocolClass: [AnyClass]? = nil) {
         let config = URLSessionConfiguration.af.default
         config.protocolClasses = protocolClass ?? [] + (config.protocolClasses ?? [] )
-        sessionManager = Session(configuration: config)
+        sessionManager = Session(configuration: config, eventMonitors: [NetworkLogger(logLevel: configuration.logLevel)])
         self.configuration = configuration
     }
 }

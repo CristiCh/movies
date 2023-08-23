@@ -12,6 +12,7 @@ import Alamofire
 class MockMovieService: MoviesServiceProtocol {
     var popularMovies: DataResponse<MoviesPaginator<ApiMovie>, Error>!
     var movie: DataResponse<ApiMovie, Error>!
+    var relatedMovies: DataResponse<MoviesPaginator<ApiMovie>, Error>!
     var fetchMovieCounter: Int = 0
     var fetchPopularMovieCounter: Int = 0
     var fetchMovieID: String? = nil
@@ -25,5 +26,9 @@ class MockMovieService: MoviesServiceProtocol {
         fetchMovieCounter += 1
         fetchMovieID = movieId
         return movie
+    }
+    
+    func fetchRelatedMovies(movieId: String, page: Int) async -> DataResponse<MoviesPaginator<ApiMovie>, Error> {
+        return relatedMovies
     }
 }

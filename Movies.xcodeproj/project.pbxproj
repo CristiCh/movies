@@ -56,6 +56,11 @@
 		8758C1C5294B737F0050E129 /* GeneralFlowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8758C1C2294B737F0050E129 /* GeneralFlowCoordinator.swift */; };
 		8758C1C6294B737F0050E129 /* MoviesFlowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8758C1C3294B737F0050E129 /* MoviesFlowCoordinator.swift */; };
 		8758C1CA294B7E140050E129 /* Configuration.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8758C1C9294B7E140050E129 /* Configuration.xcconfig */; };
+		8776DF2E2A8D118C00CCEF17 /* NetworkLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8776DF2D2A8D118C00CCEF17 /* NetworkLogger.swift */; };
+		8776DF302A8D1D6F00CCEF17 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 8776DF2F2A8D1D6F00CCEF17 /* FirebaseAuth */; };
+		8776DF322A8D1DA900CCEF17 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 8776DF312A8D1DA900CCEF17 /* FirebaseCrashlytics */; };
+		8776DF342A8D1DB100CCEF17 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 8776DF332A8D1DB100CCEF17 /* GoogleSignIn */; };
+		8776DF362A8D1DC400CCEF17 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 8776DF352A8D1DC400CCEF17 /* FirebaseRemoteConfig */; };
 		87A4385E2A697F23006E79C1 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87A4385D2A697F23006E79C1 /* LoginView.swift */; };
 		87A438602A698016006E79C1 /* LoginFlowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87A4385F2A698016006E79C1 /* LoginFlowCoordinator.swift */; };
 		87A438622A69804A006E79C1 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87A438612A69804A006E79C1 /* LoginViewModel.swift */; };
@@ -136,6 +141,7 @@
 		8758C1C2294B737F0050E129 /* GeneralFlowCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneralFlowCoordinator.swift; sourceTree = "<group>"; };
 		8758C1C3294B737F0050E129 /* MoviesFlowCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoviesFlowCoordinator.swift; sourceTree = "<group>"; };
 		8758C1C9294B7E140050E129 /* Configuration.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Configuration.xcconfig; sourceTree = "<group>"; };
+		8776DF2D2A8D118C00CCEF17 /* NetworkLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkLogger.swift; sourceTree = "<group>"; };
 		87A4385D2A697F23006E79C1 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		87A4385F2A698016006E79C1 /* LoginFlowCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginFlowCoordinator.swift; sourceTree = "<group>"; };
 		87A438612A69804A006E79C1 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
@@ -198,7 +204,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8776DF342A8D1DB100CCEF17 /* GoogleSignIn in Frameworks */,
 				87C8141A2A03FFA700200695 /* RealmSwift in Frameworks */,
+				8776DF322A8D1DA900CCEF17 /* FirebaseCrashlytics in Frameworks */,
+				8776DF362A8D1DC400CCEF17 /* FirebaseRemoteConfig in Frameworks */,
+				8776DF302A8D1D6F00CCEF17 /* FirebaseAuth in Frameworks */,
 				87C814182A03FFA200200695 /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -289,6 +299,7 @@
 				87CE692D29881E9900DAD751 /* Extensions */,
 				8758C1BA294B73660050E129 /* MoviesService.swift */,
 				8758C1B9294B73660050E129 /* ServiceConfiguration.swift */,
+				8776DF2D2A8D118C00CCEF17 /* NetworkLogger.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -470,6 +481,10 @@
 			packageProductDependencies = (
 				87C814172A03FFA200200695 /* Realm */,
 				87C814192A03FFA700200695 /* RealmSwift */,
+				8776DF2F2A8D1D6F00CCEF17 /* FirebaseAuth */,
+				8776DF312A8D1DA900CCEF17 /* FirebaseCrashlytics */,
+				8776DF332A8D1DB100CCEF17 /* GoogleSignIn */,
+				8776DF352A8D1DC400CCEF17 /* FirebaseRemoteConfig */,
 			);
 			productName = MoviesTests;
 			productReference = 87C5043C2991573200531F36 /* MoviesTests.xctest */;
@@ -613,6 +628,7 @@
 				8716D8252959F45D0098A13C /* MovieViewModel.swift in Sources */,
 				8758C1B7294B735C0050E129 /* MoviesPaginator.swift in Sources */,
 				87A438602A698016006E79C1 /* LoginFlowCoordinator.swift in Sources */,
+				8776DF2E2A8D118C00CCEF17 /* NetworkLogger.swift in Sources */,
 				87CE692A29881CA300DAD751 /* ServerError.swift in Sources */,
 				87B9869A2A570E6700A94BC8 /* UpgradeModalView.swift in Sources */,
 				87A4385E2A697F23006E79C1 /* LoginView.swift in Sources */,
@@ -1051,6 +1067,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8758C19A294792F50050E129 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		8776DF2F2A8D1D6F00CCEF17 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 872070092A24F2F2000655C5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		8776DF312A8D1DA900CCEF17 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 872070092A24F2F2000655C5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		8776DF332A8D1DB100CCEF17 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8718970A2A7808FF00020893 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		8776DF352A8D1DC400CCEF17 /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 872070092A24F2F2000655C5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
 		};
 		87C814172A03FFA200200695 /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
