@@ -14,4 +14,5 @@ class MockServiceConfiguration: ServiceConfigurationProtocol {
     let baseURL: String = "https://api.mock/"
     let imagesURL: String = "https://image.tmdb.org/t/p/original/"
     let logLevel: NetworkLogger.LogLevel = .none
+    let recordCrash: CrashRecord? = nil
 }

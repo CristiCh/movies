@@ -30,5 +30,6 @@ class MockMovieService: MoviesServiceProtocol {
     
     func fetchRelatedMovies(movieId: String, page: Int) async -> DataResponse<MoviesPaginator<ApiMovie>, Error> {
         return relatedMovies
+//        Fill the relatedMovies!
     }
 }

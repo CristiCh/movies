@@ -41,8 +41,14 @@ final class MovieViewModelTests: XCTestCase {
         let expectation = XCTestExpectation(description: "loadMovieData")
         let apiObject = ApiMovie(id: 123, title: "Title", overview: "Overview", posterPath: "PosterPath")
         mockMovieService.movie = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .success(apiObject))
+        let apiObject1 = ApiMovie(id: 123, title: "Title1", overview: "Overview1", posterPath: "PosterPath1")
+        let apiObject2 = ApiMovie(id: 100, title: "Title2", overview: "Overview2", posterPath: "PosterPath2")
+        let paginator = MoviesPaginator(page: 1, totalPages: 1, totalResults: 2, results: [apiObject1, apiObject2])
+        mockMovieService.relatedMovies = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .success(paginator))
+        
         XCTAssertEqual(mockMovieService.fetchMovieCounter, 0)
-        movieViewModel.$movie.dropFirst().sink { movie in
+        movieViewModel.$movie.collect(3).sink { results in
+            let movie = results[2]
             XCTAssertNotNil(movie)
             XCTAssertEqual(movie?.id, "123")
             XCTAssertEqual(movie?.title, "Title")
@@ -60,6 +66,7 @@ final class MovieViewModelTests: XCTestCase {
     func testLoadMovieDataWrong() {
         let expectation = XCTestExpectation(description: "loadMovieDataWrong")
         mockMovieService.movie = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .failure(ConfigError(code: 501, message: "DataRequset is nil")))
+        mockMovieService.relatedMovies = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .failure(ConfigError(code: 501, message: "DataRequset is nil")))
         XCTAssertEqual(mockMovieService.fetchMovieCounter, 0)
         movieViewModel.$movie.dropFirst().sink { movie in
             XCTAssertNil(movie)
@@ -76,6 +83,10 @@ final class MovieViewModelTests: XCTestCase {
         let expectation = XCTestExpectation(description: "isLoading")
         let apiObject = ApiMovie(id: 123, title: "Title", overview: "Overview", posterPath: "PosterPath")
         mockMovieService.movie = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .success(apiObject))
+        let apiObject1 = ApiMovie(id: 123, title: "Title1", overview: "Overview1", posterPath: "PosterPath1")
+        let apiObject2 = ApiMovie(id: 100, title: "Title2", overview: "Overview2", posterPath: "PosterPath2")
+        let paginator = MoviesPaginator(page: 1, totalPages: 1, totalResults: 2, results: [apiObject1, apiObject2])
+        mockMovieService.relatedMovies = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .success(paginator))
         XCTAssertEqual(mockMovieService.fetchMovieCounter, 0)
         XCTAssertEqual(movieViewModel.isLoading, false)
         movieViewModel.$isLoading.collect(3).sink { isLoading in
@@ -92,6 +103,7 @@ final class MovieViewModelTests: XCTestCase {
     func testIsLoadingWrong() {
         let expectation = XCTestExpectation(description: "isLoadingWrong")
         mockMovieService.movie = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .failure(ConfigError(code: 501, message: "DataRequset is nil")))
+        mockMovieService.relatedMovies = DataResponse(request: nil, response: nil, data: nil, metrics: nil, serializationDuration: 0, result: .failure(ConfigError(code: 501, message: "DataRequset is nil")))
         XCTAssertEqual(mockMovieService.fetchMovieCounter, 0)
         XCTAssertEqual(movieViewModel.isLoading, false)
         movieViewModel.$isLoading.collect(3).sink { isLoading in

@@ -7,12 +7,18 @@
 //
 
 import Foundation
+import FirebaseCrashlytics
+
+protocol CrashRecord {
+    func recordCrash(error: NSError)
+}
 
 protocol ServiceConfigurationProtocol {
     var apiKey: String? { get }
     var baseURL: String { get }
     var imagesURL: String { get }
     var logLevel: NetworkLogger.LogLevel { get }
+    var recordCrash: CrashRecord? { get }
 }
 
 class ServiceConfiguration: ServiceConfigurationProtocol {
@@ -20,4 +26,5 @@ class ServiceConfiguration: ServiceConfigurationProtocol {
     let baseURL: String = "https://api.themoviedb.org/3/movie/"
     let imagesURL: String = "https://image.tmdb.org/t/p/original/"
     let logLevel: NetworkLogger.LogLevel = .basic
+    let recordCrash: CrashRecord? = Crashlytics.crashlytics()
 }

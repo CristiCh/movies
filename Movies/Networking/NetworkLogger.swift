@@ -9,6 +9,12 @@ import Foundation
 import Alamofire
 import FirebaseCrashlytics
 
+extension Crashlytics: CrashRecord {
+    func recordCrash(error: NSError) {
+        record(error: error)
+    }
+}
+
 class NetworkLogger: EventMonitor {
     enum LogLevel: Int {
         case none = 0
@@ -18,9 +24,11 @@ class NetworkLogger: EventMonitor {
     }
     
     private var logLevel: LogLevel
+    private let crashRecord: CrashRecord?
     
-    init(logLevel: LogLevel) {
+    init(logLevel: LogLevel, crashRecord: CrashRecord?) {
         self.logLevel = logLevel
+        self.crashRecord = crashRecord
     }
     
     func requestDidResume(_ request: Request) {
@@ -68,7 +76,8 @@ class NetworkLogger: EventMonitor {
         if let statusCode = response.response?.statusCode, !range.contains(statusCode) {
             let userInfo = ["statusCode" : "\(statusCode)", "url" : response.response?.url?.absoluteURL ?? ""] as [String : Any]
             let error = NSError.init(domain: NSCocoaErrorDomain, code: -1001, userInfo: userInfo)
-            Crashlytics.crashlytics().record(error: error)
+            crashRecord?.recordCrash(error: error)
         }
     }
 }
+

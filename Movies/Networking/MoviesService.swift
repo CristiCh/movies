@@ -8,6 +8,7 @@
 
 import Foundation
 import Alamofire
+import FirebaseCrashlytics
 
 protocol MoviesServiceProtocol {
     func fetchPopularMovies(page: Int) async -> DataResponse<MoviesPaginator<ApiMovie>, Error>
@@ -32,7 +33,7 @@ class MoviesService {
     init(configuration: ServiceConfigurationProtocol, protocolClass: [AnyClass]? = nil) {
         let config = URLSessionConfiguration.af.default
         config.protocolClasses = protocolClass ?? [] + (config.protocolClasses ?? [] )
-        sessionManager = Session(configuration: config, eventMonitors: [NetworkLogger(logLevel: configuration.logLevel)])
+        sessionManager = Session(configuration: config, eventMonitors: [NetworkLogger(logLevel: configuration.logLevel, crashRecord: configuration.recordCrash)])
         self.configuration = configuration
     }
 }
